@@ -1,0 +1,43 @@
+services:
+  # ── FastAPI Web Service ──────────────────────────────────────────────────────
+  - type: web
+    name: instaiq-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free                       # upgrade to starter ($7/mo) when you need persistent workers
+    region: oregon
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: DATABASE_URL
+        sync: false                  # set manually in Render dashboard
+      - key: REDIS_URL
+        sync: false
+      - key: JWT_SECRET_KEY
+        generateValue: true          # Render auto-generates a secure value
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: '["https://instaiq.vercel.app","http://localhost:3000"]'
+
+  # ── Background Worker (RQ) ────────────────────────────────────────────────
+  # Uncomment when you move heavy scraping to a dedicated worker
+  # - type: worker
+  #   name: instaiq-worker
+  #   runtime: docker
+  #   dockerfilePath: ./Dockerfile
+  #   plan: free
+  #   startCommand: rq worker --url $REDIS_URL instaiq_queue
+  #   envVars:
+  #     - fromGroup: instaiq-shared
