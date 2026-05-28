@@ -318,3 +318,22 @@ Respond in JSON: {{"summary": "...", "insights": ["...", "...", "...", "..."]}}
                 "Inactive follower rate suggests potential for a re-engagement campaign.",
             ]
         )
+class BrowserSession:
+    """Compatibility shim — no browser needed with instaloader."""
+    async def start(self):
+        pass
+
+    async def close(self):
+        pass
+
+
+class InstagramScraper:
+    """Compatibility shim wrapping instaloader functions."""
+    def __init__(self, session: BrowserSession = None):
+        pass
+
+    async def fetch_profile(self, username: str) -> dict:
+        return await quick_profile_check(username)
+
+    async def fetch_followers_sample(self, username: str, limit: int = 200) -> list:
+        return await fetch_followers_sample(username, limit=limit)
